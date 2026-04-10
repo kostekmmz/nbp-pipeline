@@ -11,9 +11,27 @@ i zapisujący je do bazy danych PostgreSQL.
 - Zabezpieczenie przed duplikatami (UNIQUE constraint na code + effective_date)
 - Obsługa błędów i logowanie
 
+
 ### Technologie
 - Python (requests, pandas, psycopg2, argparse)
 - PostgreSQL
+- dbt
+- GitHub Actions (pokazowo, baza skonfigurowana lokalnie)
+
+## Architektura / Architecture
+
+raw_exchange_rates (PostgreSQL)
+    ↓ dbt
+stg_nbp_rates (staging - oczyszczone dane)
+    ↓ dbt
+dim_currency (wymiar walut)
+mart_monthly_avg (średnia miesięczna per waluta)
+mart_mom_change (zmiana miesiąc do miesiąca)
+
+* Warstwa staging - oczyszczenie i ujednolicenie danych
+* dim_currency - wymiar z unikalnymi walutami
+* mart_monthly_avg - średnia miesięczna kursu per waluta
+* mart_mom_change - zmiana kursu miesiąc do miesiąca (MoM)
 
 ### Uruchomienie
 
@@ -44,6 +62,14 @@ and storing them in a PostgreSQL database.
 ### Tech Stack
 - Python (requests, pandas, psycopg2, argparse)
 - PostgreSQL
+- dbt
+- GitHub Actions (only preview, working on localhost)
+
+* Staging layer - data cleaning and standardization
+* dim_currency - dimension table with unique currencies
+* mart_monthly_avg - monthly average exchange rate per currency
+* mart_mom_change - month-over-month exchange rate change
+
 
 ### How to run
 
