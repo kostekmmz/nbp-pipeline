@@ -1,0 +1,6 @@
+sources:
+  - name: exch_rates
+    database: nbp_pipeline
+    schema: exch_rates
+    tables:
+      - name: raw_exchange_rates

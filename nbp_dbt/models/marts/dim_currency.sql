@@ -1,0 +1,1 @@
+select DISTINCT(code), currency from {{ref('stg_nbp_rates')}}
