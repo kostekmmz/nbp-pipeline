@@ -7,15 +7,14 @@ Pipeline pobierający kursy walut z API Narodowego Banku Polskiego i zapisujący
 ---
 
 ## Architektura / Architecture
-raw_exchange_rates (PostgreSQL)
-↓ dbt
-stg_nbp_rates (staging)
-↓ dbt
-├── dim_currency
-├── mart_monthly_avg
-└── mart_mom_change
----
-
+```mermaid
+flowchart TD
+    A[NBP API] -->|Python ingestion| B[(raw_exchange_rates)]
+    B -->|dbt staging| C[stg_nbp_rates]
+    C -->|dbt| D[dim_currency]
+    C -->|dbt| E[mart_monthly_avg]
+    E -->|dbt| F[mart_mom_change]
+```
 ## Funkcjonalności / Features
 
 | PL | EN |
