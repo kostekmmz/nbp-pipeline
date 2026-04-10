@@ -43,7 +43,7 @@ flowchart TD
 - Python (`requests`, `pandas`, `psycopg2`, `argparse`, `python-dotenv`)
 - PostgreSQL
 - dbt (dbt-postgres)
-- GitHub Actions *(demo — baza skonfigurowana lokalnie / localhost only)*
+- GitHub Actions *(demo - baza skonfigurowana lokalnie / localhost only)*
 
 ---
 
