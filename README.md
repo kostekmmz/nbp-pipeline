@@ -1,85 +1,78 @@
 # NBP Exchange Rates Pipeline
 
-## PL
-Pipeline pobierający kursy walut z API Narodowego Banku Polskiego 
-i zapisujący je do bazy danych PostgreSQL.
+Pipeline pobierający kursy walut z API Narodowego Banku Polskiego i zapisujący je do bazy danych PostgreSQL.
 
-### Funkcjonalności
-- Pobieranie danych historycznych z podaniem zakresu dat
-- Pobieranie danych przyrostowo od ostatniej daty w bazie
-- Automatyczny podział na chunki (limit API: 93 dni)
-- Zabezpieczenie przed duplikatami (UNIQUE constraint na code + effective_date)
-- Obsługa błędów i logowanie
-
-
-### Technologie
-- Python (requests, pandas, psycopg2, argparse)
-- PostgreSQL
-- dbt
-- GitHub Actions (pokazowo, baza skonfigurowana lokalnie)
-
-## Architektura / Architecture
-
-raw_exchange_rates (PostgreSQL)
-    ↓ dbt
-stg_nbp_rates (staging - oczyszczone dane)
-    ↓ dbt
-dim_currency (wymiar walut)
-mart_monthly_avg (średnia miesięczna per waluta)
-mart_mom_change (zmiana miesiąc do miesiąca)
-
-* Warstwa staging - oczyszczenie i ujednolicenie danych
-* dim_currency - wymiar z unikalnymi walutami
-* mart_monthly_avg - średnia miesięczna kursu per waluta
-* mart_mom_change - zmiana kursu miesiąc do miesiąca (MoM)
-
-### Uruchomienie
-
-Zainstaluj zależności:
-pip install -r requirements.txt
-
-Stwórz plik .env na podstawie .env.example i uzupełnij dane do bazy.
-
-Pobierz dane historyczne:
-py insert_records.py --start_date 2024-01-01 --end_date 2024-12-31
-
-Pobierz dane przyrostowo:
-py insert_records.py
+*Pipeline fetching exchange rates from the National Bank of Poland API and storing them in a PostgreSQL database.*
 
 ---
 
-## EN
-Pipeline fetching exchange rates from the National Bank of Poland API 
-and storing them in a PostgreSQL database.
+## Architektura / Architecture
+raw_exchange_rates (PostgreSQL)
+↓ dbt
+stg_nbp_rates (staging)
+↓ dbt
+├── dim_currency
+├── mart_monthly_avg
+└── mart_mom_change
+---
 
-### Features
-- Historical data ingestion with custom date range
-- Incremental data loading from last available date in database
-- Automatic chunking due to 93-day API limit
-- Duplicate prevention (UNIQUE constraint on code + effective_date)
-- Error handling
+## Funkcjonalności / Features
 
-### Tech Stack
-- Python (requests, pandas, psycopg2, argparse)
+| PL | EN |
+|---|---|
+| Pobieranie danych historycznych z podaniem zakresu dat | Historical data ingestion with custom date range |
+| Pobieranie danych przyrostowo od ostatniej daty w bazie | Incremental data loading from last available date |
+| Automatyczny podział na chunki (limit API: 93 dni) | Automatic chunking due to 93-day API limit |
+| Zabezpieczenie przed duplikatami (UNIQUE constraint) | Duplicate prevention (UNIQUE constraint) |
+| Obsługa błędów | Error handling |
+
+---
+
+## Modele dbt / dbt Models
+
+| Model | Opis / Description |
+|---|---|
+| `stg_nbp_rates` | Oczyszczone dane / Cleaned raw data |
+| `dim_currency` | Wymiar walut / Currency dimension |
+| `mart_monthly_avg` | Średnia miesięczna / Monthly average rate |
+| `mart_mom_change` | Zmiana MoM / Month-over-month change |
+
+---
+
+## Tech Stack
+
+- Python (`requests`, `pandas`, `psycopg2`, `argparse`, `python-dotenv`)
 - PostgreSQL
-- dbt
-- GitHub Actions (only preview, working on localhost)
+- dbt (dbt-postgres)
+- GitHub Actions *(demo — baza skonfigurowana lokalnie / localhost only)*
 
-* Staging layer - data cleaning and standardization
-* dim_currency - dimension table with unique currencies
-* mart_monthly_avg - monthly average exchange rate per currency
-* mart_mom_change - month-over-month exchange rate change
+---
 
+## Uruchomienie / How to run
 
-### How to run
-
-Install dependencies:
+**1. Zainstaluj zależności / Install dependencies**
+```bash
 pip install -r requirements.txt
+```
 
-Create .env file based on .env.example and fill in your database credentials.
+**2. Skonfiguruj zmienne środowiskowe / Configure environment**
+```bash
+cp .env.example .env
+# uzupełnij dane do bazy / fill in your database credentials
+```
 
-Historical load:
+**3. Pobierz dane historyczne / Historical load**
+```bash
 py insert_records.py --start_date 2024-01-01 --end_date 2024-12-31
+```
 
-Incremental load:
+**4. Pobierz dane przyrostowo / Incremental load**
+```bash
 py insert_records.py
+```
+
+**5. Uruchom transformacje dbt / Run dbt transformations**
+```bash
+cd nbp_dbt
+dbt run
+```
